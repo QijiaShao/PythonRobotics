@@ -16,13 +16,13 @@ import numpy as np
 
 # Similation parameters
 Kp = 15
-dt = 0.01
+dt = 0.05
 
 # Link lengths
 l1 = l2 = 1
 
 # Set initial goal position to the initial end-effector position
-x = 2
+x = 1
 y = 0
 
 show_animation = True
@@ -50,10 +50,12 @@ def two_joint_arm(GOAL_TH=0.0, theta1=0.0, theta2=0.0):
             theta1_goal = np.math.atan2(y, x) - np.math.atan2(l2 *
                                                               np.sin(theta2_goal), (l1 + l2 * np.cos(theta2_goal)))
 
-            if theta1_goal < 0:
-                theta2_goal = -theta2_goal
-                theta1_goal = np.math.atan2(
-                    y, x) - np.math.atan2(l2 * np.sin(theta2_goal), (l1 + l2 * np.cos(theta2_goal)))
+            print(theta1_goal,theta2_goal)
+
+            # if theta1_goal < 0:
+            #     theta2_goal = -theta2_goal
+            #     theta1_goal = np.math.atan2(
+            #         y, x) - np.math.atan2(l2 * np.sin(theta2_goal), (l1 + l2 * np.cos(theta2_goal)))
 
             theta1 = theta1 + Kp * ang_diff(theta1_goal, theta1) * dt
             theta2 = theta2 + Kp * ang_diff(theta2_goal, theta2) * dt
@@ -123,15 +125,49 @@ def animation():
             GOAL_TH=0.01, theta1=theta1, theta2=theta2)
 
 
+def trajactory_gen():
+    global x, y
+    theta1 = theta2 = 0.0
+    for l in range(-10,12,2):
+        x = l/10
+        y = -1
+        theta1, theta2 = two_joint_arm(
+            GOAL_TH=0.01, theta1=theta1, theta2=theta2)
+    
+    for l in range(-10,12,2):
+        y = l/10
+        theta1, theta2 = two_joint_arm(
+            GOAL_TH=0.01, theta1=theta1, theta2=theta2)
+    
+    for l in range(10,-12,-2):
+        x = l/10
+        
+        theta1, theta2 = two_joint_arm(
+            GOAL_TH=0.01, theta1=theta1, theta2=theta2)
+    
+    for l in range(10,-12,-2):
+        y = l/10
+        theta1, theta2 = two_joint_arm(
+            GOAL_TH=0.01, theta1=theta1, theta2=theta2)
+
+
+
+
 def main():  # pragma: no cover
     fig = plt.figure()
-    fig.canvas.mpl_connect("button_press_event", click)
+    two_joint_arm()
+    # fig.canvas.mpl_connect("button_press_event", click)
     # for stopping simulation with the esc key.
     fig.canvas.mpl_connect('key_release_event', lambda event: [
                            exit(0) if event.key == 'escape' else None])
-    two_joint_arm()
+    
+    
+
 
 
 if __name__ == "__main__":
     # animation()
-    main()
+    
+    trajactory_gen()
+    # main()
+
